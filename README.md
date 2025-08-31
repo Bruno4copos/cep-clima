@@ -6,7 +6,7 @@ Este serviço consulta o clima baseado no CEP usando a API da ViaCEP e WeatherAP
 
 ### Requisição:
 
-GET /weather?cep=01153000
+GET /cep-clima?cep=01153000
 
 ```bash
 ### Resposta:
