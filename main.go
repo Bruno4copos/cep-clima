@@ -28,31 +28,32 @@ type Temperature struct {
 }
 
 func main() {
-	http.HandleFunc("/weather", weatherHandler)
+	http.HandleFunc("/cep-clima", weatherHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	log.Printf("Server running on port %s...", port)
+	log.Printf("Server running on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	cep := r.URL.Query().Get("cep")
-	if !isValidCEP(cep) {
-		http.Error(w, "invalid zipcode", http.StatusUnprocessableEntity)
+	ok, err := isValidCEP(cep)
+	if !ok {
+		http.Error(w, "invalid zipcode: "+err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
 	city, err := fetchCityByCEP(cep)
 	if err != nil {
-		http.Error(w, "can not find zipcode", http.StatusNotFound)
+		http.Error(w, "can not find zipcode: "+err.Error(), http.StatusNotFound)
 		return
 	}
 
 	tempC, err := fetchTemperatureByCity(city)
 	if err != nil {
-		http.Error(w, "failed to fetch temperature", http.StatusInternalServerError)
+		http.Error(w, "failed to fetch temperature: "+http.StatusText(http.StatusInternalServerError)+" - "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -66,16 +67,15 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-func isValidCEP(cep string) bool {
-	matched, _ := regexp.MatchString(`^[0-9]{8}$`, cep)
-	return matched
+func isValidCEP(cep string) (bool, error) {
+	return regexp.MatchString(`^[0-9]{8}$`, cep)
 }
 
 func fetchCityByCEP(cep string) (string, error) {
 	client := http.Client{Timeout: 1 * time.Second}
 	resp, err := client.Get("https://viacep.com.br/ws/" + cep + "/json/")
 	if err != nil || resp.StatusCode != 200 {
-		return "", fmt.Errorf("CEP not found")
+		return "", fmt.Errorf("CEP not found: %v", http.StatusText(resp.StatusCode))
 	}
 	defer resp.Body.Close()
 	var viaCEP ViaCEP
@@ -94,7 +94,7 @@ func fetchTemperatureByCity(city string) (float64, error) {
 	url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", apiKey, city)
 	resp, err := client.Get(url)
 	if err != nil || resp.StatusCode != 200 {
-		return 0, fmt.Errorf("weather fetch failed")
+		return 0, fmt.Errorf("weather fetch failed: %v - %v", http.StatusText(resp.StatusCode), err)
 	}
 	defer resp.Body.Close()
 	var weather WeatherAPIResponse
