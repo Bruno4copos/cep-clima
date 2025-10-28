@@ -1,18 +1,14 @@
-FROM golang:1.21 as build
+FROM golang:latest as builder
 ENV CGO_ENABLE=0
 ENV GOOS=linux
 ENV GOARCH=amd64
-ENV CLOUDSDK_AUTH_ACCESS_TOKEN=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
 WORKDIR /app
 COPY . .
-RUN  go build -o cep-clima .
+RUN  go build -ldflags="-w -s" -o cep-clima main.go
 CMD ["./cep-clima"]
 
 FROM scratch
 WORKDIR /app
-COPY . .
-ENV CLOUDSDK_AUTH_ACCESS_TOKEN=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
-ENV WEATHER_API_KEY="19041265099a413dbfb183552253108"
+COPY --from=builder /app/cep-clima .
 ENV PORT=8080
-COPY --from=build /app/cep-clima .
 ENTRYPOINT ["./cep-clima"]

@@ -1,11 +1,14 @@
 version: '3'
+
 services:
-weather:
-build: .
-ports:
-- "8080:8080"
-environment:
-- WEATHER_API_KEY=19041265099a413dbfb183552253108
-- CGO_ENABLE=0
-- GOOS=linux
-- GOARCH=amd64
+  goapp:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    environment:
+      - WEATHER_API_KEY=19041265099a413dbfb183552253108
+      - CGO_ENABLE=0
+      - GOOS=linux
+      - GOARCH=amd64
