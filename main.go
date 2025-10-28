@@ -72,7 +72,7 @@ func isValidCEP(cep string) (bool, error) {
 }
 
 func fetchCityByCEP(cep string) (string, error) {
-	client := http.Client{Timeout: 1 * time.Second}
+	client := http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get("https://viacep.com.br/ws/" + cep + "/json/")
 	if err != nil || resp.StatusCode != 200 {
 		return "", fmt.Errorf("CEP not found: %v", http.StatusText(resp.StatusCode))
@@ -90,7 +90,7 @@ func fetchTemperatureByCity(city string) (float64, error) {
 	if apiKey == "" {
 		return 0, fmt.Errorf("API key not set")
 	}
-	client := http.Client{Timeout: 1 * time.Second}
+	client := http.Client{Timeout: 10 * time.Second}
 	url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", apiKey, city)
 	resp, err := client.Get(url)
 	if err != nil || resp.StatusCode != 200 {
