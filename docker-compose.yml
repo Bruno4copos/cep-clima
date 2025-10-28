@@ -12,3 +12,5 @@ services:
       - CGO_ENABLE=0
       - GOOS=linux
       - GOARCH=amd64
+    - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/fullcyclelabs1/cep-clima-goexpert', './Dockerfile']
