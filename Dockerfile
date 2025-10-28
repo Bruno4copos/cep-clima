@@ -10,5 +10,4 @@ CMD ["./cep-clima"]
 FROM scratch
 WORKDIR /app
 COPY --from=builder /app/cep-clima .
-ENV PORT=8080
 ENTRYPOINT ["./cep-clima"]
