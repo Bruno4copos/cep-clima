@@ -42,11 +42,9 @@ docker run -p 8080:8080 -e WEATHER_API_KEY=your_key weatherapi
 
 ## Deploy Google Cloud Run
 
-1. Crie projeto e container registry
+A aplicação hospedada no Google Cloud Run pode ser acessada diretamente pela URL:
 
-2. Suba com:
-
-```css
-gcloud builds submit --tag gcr.io/[PROJECT-ID]/weatherapi
-gcloud run deploy weatherapi --image gcr.io/[PROJECT-ID]/weatherapi --platform managed
 ```
+https://cep-clima-deqjw47rua-uc.a.run.app/cep-clima?cep=XXXXXXXX
+```
+Exemplo: [https://cep-clima-deqjw47rua-uc.a.run.app/cep-clima?cep=89211485](https://cep-clima-deqjw47rua-uc.a.run.app/cep-clima?cep=89211485)
